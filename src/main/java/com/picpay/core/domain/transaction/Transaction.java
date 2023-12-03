@@ -1,6 +1,6 @@
-package com.picpay.domain.transaction;
+package com.picpay.core.domain.transaction;
 
-import com.picpay.domain.user.User;
+import com.picpay.core.domain.user.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,7 +25,7 @@ public class Transaction {
     private BigDecimal value;
 
     @Column(name = "TIMESTAMP", nullable = false)
-    private LocalDateTime timestamp;
+    private LocalDateTime timestamp = LocalDateTime.now();
 
     @ManyToOne
     @JoinColumn(name = "PAYER_ID", nullable = false)

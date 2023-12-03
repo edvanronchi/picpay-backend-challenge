@@ -1,9 +1,8 @@
-package com.picpay.domain.user;
+package com.picpay.core.domain.user;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 import lombok.Setter;
 
 import java.math.BigDecimal;
@@ -40,5 +39,9 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "TYPE", nullable = false)
-    private TypeUser typeUser;
+    private UserType userType;
+
+    public boolean isShopKeeperUser() {
+        return UserType.SHOPKEEPER.equals(this.userType);
+    }
 }
