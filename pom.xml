@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.picpay</groupId>
-	<artifactId>backend-challenge</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<name>backend-challenge</name>
+	<artifactId>picpay-backend-challenge</artifactId>
+	<version>2023.0.1</version>
+	<name>picpay-backend-challenge</name>
 	<description>PicPay Back-end Challenge</description>
 	<properties>
 		<java.version>17</java.version>
@@ -51,7 +51,11 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-	</dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+    </dependencies>
 
 	<build>
 		<plugins>

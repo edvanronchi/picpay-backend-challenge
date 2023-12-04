@@ -1,17 +1,15 @@
 package com.picpay.application.services;
 
-import com.picpay.core.domain.transaction.Transaction;
-import com.picpay.core.domain.user.User;
-import com.picpay.adapters.dtos.TransactionDto;
-import com.picpay.adapters.dtos.repositories.TransactionRepository;
+import com.picpay.application.dtos.TransactionDto;
+import com.picpay.domain.entities.transaction.Transaction;
+import com.picpay.domain.entities.user.User;
+import com.picpay.domain.repositories.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.Map;
+import java.util.Objects;
 
 @Service
 public class TransactionService {
@@ -23,12 +21,20 @@ public class TransactionService {
     private TransactionRepository repository;
 
     @Autowired
-    private RestTemplate restTemplate;
+    private AuthorizationService authorizationService;
 
     @Autowired
     private NotificationService notificationService;
 
-    private void validateTransaction(User payer, BigDecimal value) throws Exception {
+    private void validateTransaction(User payer, User payee, BigDecimal value) throws Exception {
+        if (Objects.isNull(payer)) {
+            throw new Exception("Usuário pagador não encontrado");
+        }
+
+        if (Objects.isNull(payee)) {
+            throw new Exception("Usuário beneficiário não encontrado");
+        }
+
         if (payer.isShopKeeperUser()) {
             throw new Exception("Usuários do tipo 'lojista' não possuem autorização para realizar transações");
         }
@@ -42,26 +48,14 @@ public class TransactionService {
         }
     }
 
-    private boolean authorizeTransaction(User payer, User payee) throws Exception {
-        ResponseEntity<Map> response = restTemplate.getForEntity("https://run.mocky.io/v3/8fafdd68-a090-496f-8c9a-3442cf30dae6", Map.class);
-        if (HttpStatus.OK.equals(response.getStatusCode())) {
-            String message = (String) response.getBody().get("message");
-            String autorizado = "Autorizado";
-
-            if (!autorizado.equals(message)) {
-                throw new Exception("Transação não autorizada");
-            }
-        }
-        throw new Exception("Erro na requisição da autorização");
-    }
-
+    @Transactional
     public Transaction createTransaction(TransactionDto transactionDto) throws Exception {
-        User payer = userService.findUserById(transactionDto.payerId());
-        User payee = userService.findUserById(transactionDto.payeeId());
+        User payer = userService.findUserById(transactionDto.payer());
+        User payee = userService.findUserById(transactionDto.payee());
         BigDecimal value = transactionDto.value();
 
-        validateTransaction(payer, value);
-        authorizeTransaction(payer, payee);
+        validateTransaction(payer, payee, value);
+        authorizationService.authorizateTransaction(payer, payee, value);
 
         Transaction transaction = new Transaction();
         transaction.setPayer(payer);
@@ -70,15 +64,15 @@ public class TransactionService {
 
         updateUserBalance(payer, payee, value);
 
-        notificationService.send(payer.getEmail(), "Transação realizada com sucesso");
-        notificationService.send(payee.getEmail(), "Transação recebida com sucesso");
+        notificationService.sendEmail(payer.getEmail(), "Transação realizada com sucesso!");
+        notificationService.sendEmail(payee.getEmail(), "Transação recebida com sucesso!");
 
         return repository.save(transaction);
     }
 
-    public void updateUserBalance(User payer, User payee, BigDecimal value) {
+    public void updateUserBalance(User payer, User payee, BigDecimal value) throws Exception {
         payer.setBalance(payer.getBalance().subtract(value));
-        payee.setBalance(payer.getBalance().add(value));
+        payee.setBalance(payee.getBalance().add(value));
 
         userService.save(payer);
         userService.save(payee);

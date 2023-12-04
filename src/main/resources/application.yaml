@@ -1,0 +1,13 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/picpay
+    username: user
+    password: pass
+    driverClassName: org.postgresql.Driver
+  jpa:
+    show-sql: true
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.xml
+
+server:
+  port: 8090

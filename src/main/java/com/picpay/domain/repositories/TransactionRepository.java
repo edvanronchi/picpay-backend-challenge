@@ -1,6 +1,6 @@
-package com.picpay.adapters.repositories;
+package com.picpay.domain.repositories;
 
-import com.picpay.core.domain.transaction.Transaction;
+import com.picpay.domain.entities.transaction.Transaction;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {

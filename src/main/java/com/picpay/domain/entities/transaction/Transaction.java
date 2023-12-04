@@ -1,6 +1,6 @@
-package com.picpay.core.domain.transaction;
+package com.picpay.domain.entities.transaction;
 
-import com.picpay.core.domain.user.User;
+import com.picpay.domain.entities.user.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,11 +13,12 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
-@Table(name="TRANSACTIONS")
-@SequenceGenerator(name = "SEQ_TRANSACTIONS", sequenceName = "SEQ_TRANSACTIONS", allocationSize = 1)
+@Table(name="TRANSACTIONS", schema = "PICPAY")
+@SequenceGenerator(name = "SEQ_TRANSACTIONS", sequenceName = "SEQ_TRANSACTIONS", allocationSize = 1, schema = "PICPAY")
 public class Transaction {
 
     @Id
+    @Column(name = "ID", updatable = false)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_TRANSACTIONS")
     private Long id;
 
