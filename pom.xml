@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.picpay</groupId>
 	<artifactId>picpay-backend-challenge</artifactId>
-	<version>2023.0.1</version>
+	<version>2023.1.0</version>
 	<name>picpay-backend-challenge</name>
 	<description>PicPay Back-end Challenge</description>
 	<properties>
