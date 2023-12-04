@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres
+    container_name: postgres-container
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: picpay
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+    volumes:
+      - picpay-data:/var/lib/postgresql/data
+
+  picpay-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: picpay-backend-image
+    container_name: picpay-backend-container
+    ports:
+      - "8080:8090"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/picpay
+      SPRING_DATASOURCE_USERNAME: user
+      SPRING_DATASOURCE_PASSWORD: pass
+    depends_on:
+      - postgres
+
+volumes:
+  picpay-data:
