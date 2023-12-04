@@ -21,7 +21,7 @@ services:
     image: picpay-backend-image
     container_name: picpay-backend-container
     ports:
-      - "8080:8090"
+      - "8090:8090"
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/picpay
       SPRING_DATASOURCE_USERNAME: user
